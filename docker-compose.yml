@@ -1,0 +1,30 @@
+version: "3.9"
+services:
+  database:
+    image: postgres
+    restart: always
+    container_name: database_postgres
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: mypassword
+      POSTGRES_DB: webautodb
+    ports:
+      - "5432:5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    
+  api:
+    build:
+      context: .
+      dockerfile: WebAppAutos/Dockerfile
+    container_name: api_service
+    environment:
+      ASPNETCORE_ENVIRONMENT: Development
+      ConnectionStrings__DefaultConnection: "Host=database;Database=webautodb;Username=postgres;Port=5432;Password=mypassword"
+    ports:
+      - "8080:8080"
+    depends_on:
+      - database
+
+volumes:
+  postgres_data: {}
